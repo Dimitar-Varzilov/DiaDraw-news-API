@@ -6,11 +6,10 @@ export async function connectToDb() {
     if (dbConnection) {
       console.log("Connected to Database");
     } else {
-      throw Error("Fail to connect to db");
+      console.error("Fail to connect to db");
     }
   } catch (error: any) {
     console.error(error);
-    throw Error("Fail to connect to db");
   }
 }
 
