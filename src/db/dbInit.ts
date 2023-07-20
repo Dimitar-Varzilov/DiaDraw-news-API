@@ -2,11 +2,15 @@ import mongoose from "mongoose";
 
 export async function connectToDb() {
   try {
-    if (process.env.DATABASE_URL)
-      await mongoose.connect(process.env.DATABASE_URL);
-    console.log("Connected to Database");
+    const dbConnection = await mongoose.connect(process.env.DATABASE_URL ?? "");
+    if (dbConnection) {
+      console.log("Connected to Database");
+    } else {
+      throw Error("Fail to connect to db");
+    }
   } catch (error: any) {
     console.error(error);
+    throw Error("Fail to connect to db");
   }
 }
 
