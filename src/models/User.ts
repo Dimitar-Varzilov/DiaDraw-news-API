@@ -7,8 +7,8 @@ export interface IUser {
 
 export interface IUserModel extends IUser, Document {}
 
-const userSchema: Schema = new Schema({
-  userName: {
+const userSchema: Schema<IUser> = new Schema({
+  username: {
     type: String,
     required: true,
   },
@@ -18,5 +18,5 @@ const userSchema: Schema = new Schema({
   },
 });
 
-const User = model<IUser>("User", userSchema);
+const User = model<IUserModel>("Users", userSchema);
 export default User;

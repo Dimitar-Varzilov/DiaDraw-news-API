@@ -11,36 +11,33 @@ export interface INews {
 
 export interface INewsModel extends INews, Document {}
 
-const newsSchema: Schema<INews> = new Schema(
-  {
-    title: {
-      type: String,
-      required: true,
-    },
-    content: {
-      type: String,
-      required: true,
-    },
-    author: {
-      type: String,
-      required: true,
-    },
-    type: {
-      type: String,
-      required: true,
-    },
-    created_at: {
-      type: Number,
-      required: true,
-      default: Date.now,
-    },
-    created_by: {
-      type: String,
-      required: true,
-    },
+const newsSchema: Schema<INews> = new Schema({
+  title: {
+    type: String,
+    required: true,
   },
-  { versionKey: false }
-);
+  content: {
+    type: String,
+    required: true,
+  },
+  author: {
+    type: String,
+    required: true,
+  },
+  type: {
+    type: String,
+    required: true,
+  },
+  created_at: {
+    type: Number,
+    required: true,
+    default: Date.now,
+  },
+  created_by: {
+    type: String,
+    required: true,
+  },
+});
 
 const News = model<INewsModel>("User", newsSchema);
 export default News;
