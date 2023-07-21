@@ -6,9 +6,9 @@ const createUser = async (req: Request, res: Response, next: NextFunction) => {
   const GeneratedUser = new User(userReq);
 
   try {
-    const user = await GeneratedUser.save();
-    const obj = user.toObject();
-    res.status(201).json({ obj });
+    await GeneratedUser.validate();
+    await GeneratedUser.save();
+    res.status(201).json({ GeneratedUser });
   } catch (error) {
     res.status(500).json(error);
   }
@@ -45,9 +45,10 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
   try {
     const user = await User.findById(id);
     if (user) {
-      user.set(req.body);
-      await user.save();
-      return res.status(201).json(user);
+      const updatedUser = user.set(req.body);
+      await updatedUser.validate();
+      const responseUser = await updatedUser.save();
+      return res.status(201).json({ responseUser });
     } else {
       return res.status(404).json({ message: "Not found" });
     }

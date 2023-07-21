@@ -6,19 +6,19 @@ const createNews = async (req: Request, res: Response, next: NextFunction) => {
   const GeneratedNews = new News(newsReq);
 
   try {
-    const news = await GeneratedNews.save();
-    const obj = news.toObject();
-    res.status(201).json({ obj });
+    await GeneratedNews.validate();
+    await GeneratedNews.save();
+    res.status(201).json({ GeneratedNews });
   } catch (error) {
     res.status(500).json(error);
   }
 };
 
 const readNews = async (req: Request, res: Response, next: NextFunction) => {
-  const newsId = req.params.newsId;
+  const id = req.params.id;
 
   try {
-    const news = await News.findById(newsId);
+    const news = await News.findById(id);
     news
       ? res.status(200).json({ news })
       : res.status(404).json({ message: "Not found" });
@@ -37,13 +37,14 @@ const readAllNews = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const updateNews = async (req: Request, res: Response, next: NextFunction) => {
-  const newsId = req.params.newsId;
+  const id = req.params.id;
   try {
-    const news = await News.findById(newsId);
+    const news = await News.findById(id);
     if (news) {
-      news.set(req.body);
-      await news.save();
-      return res.status(201).json(news);
+      const updatedNews = news.set(req.body);
+      await updatedNews.validate();
+      const responseNews = await updatedNews.save();
+      return res.status(201).json({ responseNews });
     } else {
       return res.status(404).json({ message: "Not found" });
     }
@@ -53,9 +54,9 @@ const updateNews = async (req: Request, res: Response, next: NextFunction) => {
 };
 
 const deleteNews = async (req: Request, res: Response, next: NextFunction) => {
-  const newsId = req.params.newsId;
+  const id = req.params.id;
   try {
-    const news = await News.findByIdAndDelete(newsId);
+    const news = await News.findByIdAndDelete(id);
     if (news) {
       return res.status(200).json({ message: "deleted" });
     } else {
