@@ -39,5 +39,5 @@ const newsSchema: Schema<INews> = new Schema({
   },
 });
 
-const News = model<INewsModel>("User", newsSchema);
+const News = model<INewsModel>("News", newsSchema);
 export default News;
