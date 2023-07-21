@@ -1,8 +1,8 @@
 import { Schema, model, Document } from "mongoose";
 
 export interface IUser {
-  username: String;
-  password: String;
+  username: string;
+  password: string;
 }
 
 export interface IUserModel extends IUser, Document {}
@@ -15,6 +15,7 @@ const userSchema: Schema<IUser> = new Schema({
   password: {
     type: String,
     required: true,
+    minlength: 8,
   },
 });
 
