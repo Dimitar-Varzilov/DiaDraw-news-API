@@ -5,7 +5,12 @@ import {
   getUserByEmail,
   loginDto,
 } from "../models/User";
-import { createHash, generateToken, random } from "../utils/password";
+import {
+  checkPassword,
+  createHash,
+  generateToken,
+  random,
+} from "../utils/password";
 
 export const register = async (req: Request, res: Response) => {
   try {
@@ -51,9 +56,13 @@ export const login = async (req: Request, res: Response) => {
       return res.sendStatus(400);
     }
 
-    const expectedHash = createHash(user.authentication.salt, password);
-
-    if (expectedHash !== user.authentication.password) {
+    if (
+      !checkPassword(
+        user.authentication.salt,
+        password,
+        user.authentication.password
+      )
+    ) {
       return res.sendStatus(400);
     }
 
