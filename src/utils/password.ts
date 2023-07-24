@@ -15,3 +15,12 @@ export const generateToken = (input: string) => {
 
   return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET!);
 };
+
+export const checkPassword = (
+  salt: string,
+  password: string,
+  userPassword: string
+): boolean => {
+  const expectedHash = createHash(salt, password);
+  return expectedHash === userPassword;
+};
