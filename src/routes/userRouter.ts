@@ -1,13 +1,19 @@
 import { Router } from "express";
 import userController from "../controllers/User";
-const { createUser, readUser, readAllUsers, updateUser, deleteUser } =
-  userController;
+import { getUsers } from "../models/User";
+import { authenticateToken } from "../middlewares/authenticateToken";
+const { verify, updateUser, deleteUser } = userController;
 const userRouter = Router();
 
-userRouter.get("/", readAllUsers);
-userRouter.get("/:id", readUser);
-userRouter.post("/", createUser);
-userRouter.patch("/:id", updateUser);
-userRouter.delete("/:id", deleteUser);
+// For development purposes only (
+userRouter.get("/", async (req, res) => {
+  const users = await getUsers();
+  res.send(users);
+});
+//)
+
+userRouter.post("/", authenticateToken, verify);
+userRouter.patch("/", authenticateToken, updateUser);
+userRouter.delete("/", authenticateToken, deleteUser);
 
 export default userRouter;
