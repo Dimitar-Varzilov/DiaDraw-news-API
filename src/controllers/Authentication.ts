@@ -20,7 +20,7 @@ export const register = async (req: Request, res: Response) => {
     }
 
     const salt = random();
-    const user = await createUser({
+    await createUser({
       email,
       fullName,
       authentication: {
@@ -28,16 +28,21 @@ export const register = async (req: Request, res: Response) => {
         password: createHash(salt, password),
       },
     });
-    return res.status(201).json(user).end();
+    return res.status(201).json({ email, fullName });
   } catch (error) {
     console.log(error);
-    return res.sendStatus(400);
+    return res.sendStatus(500);
   }
 };
 
 export const login = async (req: Request, res: Response) => {
   try {
     const { email, password } = req.body as loginDto;
+
+    if (!email || !password) {
+      return res.sendStatus(400);
+    }
+
     const user = await getUserByEmail(email).select(
       "+authentication.salt +authentication.password"
     );
@@ -52,11 +57,11 @@ export const login = async (req: Request, res: Response) => {
       return res.sendStatus(400);
     }
 
-    const accessToken = generateToken(email);
+    const accessToken = generateToken(user._id);
     return res.json({ accessToken });
   } catch (error) {
     console.log(error);
-    return res.sendStatus(400);
+    return res.sendStatus(500);
   }
 };
 const authenticationController = { register, login };
