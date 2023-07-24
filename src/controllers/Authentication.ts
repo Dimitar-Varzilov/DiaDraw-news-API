@@ -14,7 +14,7 @@ import {
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { email, password, fullName }: registerDto = req.body;
+    const { email, password, fullName } = req.body as registerDto;
     if (!email || !password || !fullName) {
       return res.sendStatus(400);
     }
