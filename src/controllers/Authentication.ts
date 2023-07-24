@@ -15,7 +15,7 @@ import {
 export const register = async (req: Request, res: Response) => {
   try {
     const { email, password, fullName } = req.body as registerDto;
-    if (!email || !password || !fullName) {
+    if (!email || !password || !fullName || password.length < 8) {
       return res.sendStatus(400);
     }
 
