@@ -44,6 +44,8 @@ export default News;
 
 export const getNews = () => News.find();
 export const getNewsById = (id: string) => News.findById(id);
+export const getAllUserNews = (userId: string) =>
+  News.find({ created_by: userId });
 export const createNewsInDb = async (news: newsDto) => {
   try {
     const generatedNews = new News(news);
