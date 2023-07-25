@@ -1,80 +1,81 @@
 import { NextFunction, Request, Response } from "express";
-import User, { IUser } from "../models/User";
+import { deleteUserById, getUserById, updateUserInDb } from "../models/User";
+import {
+  checkPassword,
+  createHash,
+  random,
+  validatePassword,
+} from "../utils/password";
+import { ICombinedBody } from "../interfaces/request";
 
-const createUser = async (req: Request, res: Response, next: NextFunction) => {
-  const userReq: IUser = req.body;
-  const GeneratedUser = new User(userReq);
-
+const verify = async (req: Request, res: Response, next: NextFunction) => {
+  const {
+    password,
+    user: { id },
+  } = req.body as ICombinedBody;
   try {
-    await GeneratedUser.validate();
-    await GeneratedUser.save();
-    res.status(201).json({ GeneratedUser });
+    if (!password) return res.sendStatus(400);
+    const user = await getUserById(id).select(
+      "+authentication.salt +authentication.password"
+    );
+    if (!user) return res.sendStatus(400);
+    checkPassword(
+      user.authentication.salt,
+      password,
+      user.authentication.password
+    )
+      ? res.sendStatus(200)
+      : res.sendStatus(400);
   } catch (error) {
-    res.status(500).json(error);
-  }
-};
-
-const readUser = async (req: Request, res: Response, next: NextFunction) => {
-  const id = req.params.id;
-
-  try {
-    const user = await User.findById(id);
-    user
-      ? res.status(200).json({ user })
-      : res.status(404).json({ message: "Not found" });
-  } catch (error) {
-    res.status(500).json(error);
-  }
-};
-
-const readAllUsers = async (
-  req: Request,
-  res: Response,
-  next: NextFunction
-) => {
-  try {
-    const user = await User.find();
-    res.status(200).json({ user });
-  } catch (error) {
-    res.status(500).json({ error });
+    res.status(500);
   }
 };
 
 const updateUser = async (req: Request, res: Response, next: NextFunction) => {
-  const id = req.params.id;
+  const {
+    email,
+    password,
+    fullName,
+    user: { id },
+  } = req.body as ICombinedBody;
   try {
-    const user = await User.findById(id);
-    if (user) {
-      const updatedUser = user.set(req.body);
-      await updatedUser.validate();
-      const responseUser = await updatedUser.save();
-      return res.status(201).json({ responseUser });
-    } else {
-      return res.status(404).json({ message: "Not found" });
+    if (!email || !password || !fullName || !id || validatePassword(password)) {
+      return res.sendStatus(400);
     }
+    const salt = random();
+    const updatedUser = await updateUserInDb(id, {
+      email,
+      fullName,
+      authentication: {
+        salt,
+        password: createHash(salt, password),
+      },
+    });
+    if (!updatedUser) return res.sendStatus(400);
+    return res.status(200).send({ email, fullName });
   } catch (error) {
-    return res.status(500).json(error);
+    return res.status(500);
   }
 };
 
 const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
-  const id = req.params.id;
+  const {
+    user: { id },
+  } = req.body as ICombinedBody;
   try {
-    const user = await User.findByIdAndDelete(id);
+    const user = await deleteUserById(id);
     if (user) {
-      return res.status(200).json({ message: "deleted" });
+      return res.status(200).json({ message: "Deleted" });
     } else {
-      res.status(404).json({ message: "Not found" });
+      return res.status(404).json({ message: "Not found" });
     }
   } catch (error) {
-    return res.status(500).json(error);
+    return res.status(500);
   }
 };
 
 const userController = {
-  createUser,
-  readUser,
-  readAllUsers,
+  verify,
   updateUser,
   deleteUser,
 };

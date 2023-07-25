@@ -35,7 +35,6 @@ const userSchema: Schema<IUserSchema> = new Schema({
     password: {
       type: String,
       required: true,
-      minlength: 8,
       select: false,
     },
     salt: {
@@ -53,8 +52,18 @@ export const getUserById = (id: string) => User.findById(id);
 export const createUser = async (user: IUserSchema) => {
   try {
     const generatedUser = new User(user);
-    await generatedUser.validate();
     const savedUser = await generatedUser.save();
+    return savedUser.toObject();
+  } catch (error) {
+    throw Error("Error creating user");
+  }
+};
+export const updateUserInDb = async (id: string, user: IUserSchema) => {
+  try {
+    const userFromDb = await getUserById(id);
+    if (!userFromDb) return null;
+    const updatedUser = userFromDb.set(user);
+    const savedUser = await updatedUser.save();
     return savedUser.toObject();
   } catch (error) {
     throw Error("Error creating user");
