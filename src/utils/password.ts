@@ -1,8 +1,7 @@
 import { randomBytes, createHmac } from "crypto";
-import { config } from "dotenv";
-import jwt from "jsonwebtoken";
+import { sign } from "jsonwebtoken";
+import { IUserToken } from "../interfaces/request";
 
-config();
 export const random = () => randomBytes(128).toString("base64");
 
 export const createHash = (salt: string, password: string) =>
@@ -11,9 +10,9 @@ export const createHash = (salt: string, password: string) =>
     .digest("hex");
 
 export const generateToken = (input: string) => {
-  const user = { name: input };
+  const user: IUserToken = { id: input };
 
-  return jwt.sign(user, process.env.ACCESS_TOKEN_SECRET!);
+  return sign(user, process.env.ACCESS_TOKEN_SECRET!);
 };
 
 export const checkPassword = (
@@ -23,4 +22,8 @@ export const checkPassword = (
 ): boolean => {
   const expectedHash = createHash(salt, password);
   return expectedHash === userPassword;
+};
+
+export const validatePassword = (password: string): boolean => {
+  return password.length < 8;
 };

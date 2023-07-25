@@ -10,12 +10,13 @@ import {
   createHash,
   generateToken,
   random,
+  validatePassword,
 } from "../utils/password";
 
 export const register = async (req: Request, res: Response) => {
   try {
     const { email, password, fullName } = req.body as registerDto;
-    if (!email || !password || !fullName || password.length < 8) {
+    if (!email || !password || !fullName || validatePassword(password)) {
       return res.sendStatus(400);
     }
 

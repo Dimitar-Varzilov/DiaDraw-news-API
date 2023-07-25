@@ -1,8 +1,5 @@
-import { config } from "dotenv";
 import { NextFunction, Request, Response } from "express";
 import { verify } from "jsonwebtoken";
-
-config();
 
 export const authenticateToken = async (
   req: Request,
@@ -14,7 +11,7 @@ export const authenticateToken = async (
   if (token == null) return res.sendStatus(401);
 
   verify(token, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {
-    if (err) return res.sendStatus(403);
+    if (err) return res.sendStatus(401);
     req.body = { ...req.body, user };
     next();
   });

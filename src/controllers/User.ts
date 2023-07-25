@@ -1,12 +1,18 @@
 import { NextFunction, Request, Response } from "express";
 import { deleteUserById, getUserById, updateUserInDb } from "../models/User";
-import { checkPassword, createHash, random } from "../utils/password";
+import {
+  checkPassword,
+  createHash,
+  random,
+  validatePassword,
+} from "../utils/password";
+import { ICombinedBody } from "../interfaces/request";
 
 const verify = async (req: Request, res: Response, next: NextFunction) => {
   const {
     password,
-    user: { name: id },
-  } = req.body;
+    user: { id },
+  } = req.body as ICombinedBody;
   try {
     if (!password) return res.sendStatus(400);
     const user = await getUserById(id).select(
@@ -30,10 +36,10 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     email,
     password,
     fullName,
-    user: { name: id },
-  } = req.body;
+    user: { id },
+  } = req.body as ICombinedBody;
   try {
-    if (!email || !password || !fullName || !id || password.length < 8) {
+    if (!email || !password || !fullName || !id || validatePassword(password)) {
       return res.sendStatus(400);
     }
     const salt = random();
@@ -54,8 +60,8 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   const {
-    user: { name: id },
-  } = req.body;
+    user: { id },
+  } = req.body as ICombinedBody;
   try {
     const user = await deleteUserById(id);
     if (user) {
