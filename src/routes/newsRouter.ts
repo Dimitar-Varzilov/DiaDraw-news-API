@@ -1,13 +1,15 @@
 import { Router } from "express";
 import newsController from "../controllers/News";
-const { createNews, deleteNews, readAllNews, readNews, updateNews } =
+import { checkOwnership } from "../middlewares/checkOwner";
+import { authenticateToken } from "../middlewares/authenticateToken";
+const { createNews, deleteNews, readAllNews, readAllNewsByUser, updateNews } =
   newsController;
 const newsRouter = Router();
 
 newsRouter.get("/", readAllNews);
-newsRouter.get("/:id", readNews);
-newsRouter.post("/", createNews);
-newsRouter.patch("/:id", updateNews);
-newsRouter.delete("/:id", deleteNews);
+newsRouter.get("/:id", authenticateToken, readAllNewsByUser);
+newsRouter.post("/", authenticateToken, createNews);
+newsRouter.patch("/:id", authenticateToken, checkOwnership, updateNews);
+newsRouter.delete("/:id", authenticateToken, checkOwnership, deleteNews);
 
 export default newsRouter;
