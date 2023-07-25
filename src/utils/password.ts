@@ -9,9 +9,8 @@ export const createHash = (salt: string, password: string) =>
     .update(process.env.PASSWORD_SECRET!)
     .digest("hex");
 
-export const generateToken = (input: string) => {
-  const user: IUserToken = { id: input };
-
+export const generateJwtToken = (id: string) => {
+  const user: IUserToken = { id };
   return sign(user, process.env.ACCESS_TOKEN_SECRET!);
 };
 

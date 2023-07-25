@@ -8,7 +8,7 @@ import {
 import {
   checkPassword,
   createHash,
-  generateToken,
+  generateJwtToken,
   random,
   validatePassword,
 } from "../utils/password";
@@ -67,7 +67,7 @@ export const login = async (req: Request, res: Response) => {
       return res.sendStatus(400);
     }
 
-    const accessToken = generateToken(user._id);
+    const accessToken = generateJwtToken(user._id);
     return res.json({ accessToken });
   } catch (error) {
     console.log(error);

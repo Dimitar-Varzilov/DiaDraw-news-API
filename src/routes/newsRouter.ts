@@ -7,9 +7,10 @@ const { createNews, deleteNews, readAllNews, readAllNewsByUser, updateNews } =
 const newsRouter = Router();
 
 newsRouter.get("/", readAllNews);
-newsRouter.get("/:id", authenticateToken, readAllNewsByUser);
+newsRouter.get("/me", authenticateToken, readAllNewsByUser);
 newsRouter.post("/", authenticateToken, createNews);
 newsRouter.patch("/:id", authenticateToken, checkOwnership, updateNews);
 newsRouter.delete("/:id", authenticateToken, checkOwnership, deleteNews);
 
 export default newsRouter;
+
