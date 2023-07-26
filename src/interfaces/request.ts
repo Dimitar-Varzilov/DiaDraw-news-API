@@ -1,10 +1,9 @@
-import { Request } from "express";
-
 export interface IUserToken {
   id: string;
 }
 
-export interface ICombinedBody extends Request {
-  user: IUserToken;
-  [key: string]: any;
+export type IdentityBody<T = any> = T & { identity: IUserToken };
+
+export interface IVerifyBody {
+  password: string;
 }

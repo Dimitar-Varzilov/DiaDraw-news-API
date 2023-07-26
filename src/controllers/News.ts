@@ -7,7 +7,7 @@ import {
   newsDto,
   updateNewsInDb,
 } from "../models/News";
-import { ICombinedBody } from "../interfaces/request";
+import { IdentityBody } from "../interfaces/request";
 
 const createNews = async (req: Request, res: Response, next: NextFunction) => {
   const newsReq = req.body as newsDto;
@@ -28,8 +28,8 @@ const readAllNewsByUser = async (
 ) => {
   try {
     const {
-      user: { id },
-    } = req.body as ICombinedBody;
+      identity: { id },
+    } = req.body as IdentityBody;
     if (!id) return res.sendStatus(400);
     const news = await getAllUserNews(id);
     return news

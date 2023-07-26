@@ -1,18 +1,23 @@
 import { NextFunction, Request, Response } from "express";
-import { deleteUserById, getUserById, updateUserInDb } from "../models/User";
+import {
+  deleteUserById,
+  getUserById,
+  registerDto,
+  updateUserInDb,
+} from "../models/User";
 import {
   checkPassword,
   createHash,
   random,
   validatePassword,
 } from "../utils/password";
-import { ICombinedBody } from "../interfaces/request";
+import { IdentityBody, IVerifyBody } from "../interfaces/request";
 
 const verify = async (req: Request, res: Response, next: NextFunction) => {
   const {
     password,
-    user: { id },
-  } = req.body as ICombinedBody;
+    identity: { id },
+  } = req.body as IdentityBody<IVerifyBody>;
   try {
     if (!password) return res.sendStatus(400);
     const user = await getUserById(id).select(
@@ -36,10 +41,16 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
     email,
     password,
     fullName,
-    user: { id },
-  } = req.body as ICombinedBody;
+    identity: { id },
+  } = req.body as IdentityBody<registerDto>;
   try {
-    if (!email || !password || !fullName || !id || validatePassword(password)) {
+    if (
+      !email ||
+      !password ||
+      !fullName ||
+      !id ||
+      !validatePassword(password)
+    ) {
       return res.sendStatus(400);
     }
     const salt = random();
@@ -60,8 +71,8 @@ const updateUser = async (req: Request, res: Response, next: NextFunction) => {
 
 const deleteUser = async (req: Request, res: Response, next: NextFunction) => {
   const {
-    user: { id },
-  } = req.body as ICombinedBody;
+    identity: { id },
+  } = req.body as IdentityBody;
   try {
     const user = await deleteUserById(id);
     if (user) {

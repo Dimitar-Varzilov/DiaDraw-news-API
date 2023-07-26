@@ -1,6 +1,6 @@
 import { NextFunction, Request, Response } from "express";
 import { getNewsById } from "../models/News";
-import { ICombinedBody } from "../interfaces/request";
+import { IdentityBody } from "../interfaces/request";
 
 export const checkOwnership = async (
   req: Request,
@@ -9,8 +9,8 @@ export const checkOwnership = async (
 ) => {
   const newsId = req.params.id;
   const {
-    user: { id: userId },
-  } = req.body as ICombinedBody;
+    identity: { id: userId },
+  } = req.body as IdentityBody;
 
   try {
     const news = await getNewsById(newsId);
