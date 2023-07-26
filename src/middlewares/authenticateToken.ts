@@ -10,9 +10,9 @@ export const authenticateToken = async (
   const token = authHeader && authHeader.split(" ")[1];
   if (token == null) return res.sendStatus(401);
 
-  verify(token, process.env.ACCESS_TOKEN_SECRET!, (err, user) => {
+  verify(token, process.env.ACCESS_TOKEN_SECRET!, (err, identity) => {
     if (err) return res.sendStatus(401);
-    req.body = { ...req.body, user };
+    req.body = { ...req.body, identity };
     next();
   });
 };
