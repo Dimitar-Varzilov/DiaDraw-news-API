@@ -10,8 +10,8 @@ export const createHash = (salt: string, password: string) =>
     .digest("hex");
 
 export const generateJwtToken = (id: string) => {
-  const user: IUserToken = { id };
-  return sign(user, process.env.ACCESS_TOKEN_SECRET!);
+  const identity: IUserToken = { id };
+  return sign(identity, process.env.ACCESS_TOKEN_SECRET!);
 };
 
 export const checkPassword = (
@@ -24,5 +24,10 @@ export const checkPassword = (
 };
 
 export const validatePassword = (password: string): boolean => {
-  return password.length < 8;
+  const regexp =
+    /^(?=.*[a-z])(?=.*[A-Z])(?=.*\d)(?=.*[#$@!%&*?])[A-Za-z\d#$@!%&*?]{8,}$/;
+  return regexp.test(password);
 };
+
+export const comparePasswords = (password1: string, password2: string) =>
+  password1 === password2;

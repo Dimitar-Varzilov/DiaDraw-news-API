@@ -7,6 +7,7 @@ import {
 } from "../models/User";
 import {
   checkPassword,
+  comparePasswords,
   createHash,
   generateJwtToken,
   random,
@@ -15,8 +16,15 @@ import {
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { email, password, fullName } = req.body as registerDto;
-    if (!email || !password || !fullName || validatePassword(password)) {
+    const { email, password, fullName, confirmPassword } =
+      req.body as registerDto;
+    if (
+      !email ||
+      !password ||
+      !fullName ||
+      !validatePassword(password) ||
+      !comparePasswords(password, confirmPassword)
+    ) {
       return res.sendStatus(400);
     }
 
