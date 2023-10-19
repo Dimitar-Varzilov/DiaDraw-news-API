@@ -1,12 +1,13 @@
 import { NextFunction, Request, Response } from "express";
-import News, {
+import {
   createNewsInDb,
   deleteNewsById,
+  getAllUserNews,
   getNews,
-  getNewsById,
   newsDto,
   updateNewsInDb,
 } from "../models/News";
+import { IdentityBody } from "../interfaces/request";
 
 const createNews = async (req: Request, res: Response, next: NextFunction) => {
   const newsReq = req.body as newsDto;
@@ -20,11 +21,17 @@ const createNews = async (req: Request, res: Response, next: NextFunction) => {
   }
 };
 
-const readNews = async (req: Request, res: Response, next: NextFunction) => {
-  const id = req.params.id;
-
+const readAllNewsByUser = async (
+  req: Request,
+  res: Response,
+  next: NextFunction
+) => {
   try {
-    const news = await getNewsById(id);
+    const {
+      identity: { id },
+    } = req.body as IdentityBody;
+    if (!id) return res.sendStatus(400);
+    const news = await getAllUserNews(id);
     return news
       ? res.status(200).json({ news })
       : res.status(404).json({ message: "Not found" });
@@ -70,7 +77,7 @@ const deleteNews = async (req: Request, res: Response, next: NextFunction) => {
 
 const newsController = {
   createNews,
-  readNews,
+  readAllNewsByUser,
   readAllNews,
   updateNews,
   deleteNews,

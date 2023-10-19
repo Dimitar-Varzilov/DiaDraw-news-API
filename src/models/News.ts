@@ -5,8 +5,8 @@ export interface newsDto {
   type: string;
   content: string;
   author: string;
-  created_at: number;
-  created_by: string;
+  createdAt: number;
+  createdBy: string;
 }
 
 export interface INewsModel extends newsDto, Document {}
@@ -28,12 +28,12 @@ const newsSchema: Schema<newsDto> = new Schema({
     type: String,
     required: true,
   },
-  created_at: {
+  createdAt: {
     type: Number,
     required: true,
     default: Date.now,
   },
-  created_by: {
+  createdBy: {
     type: String,
     required: true,
   },
@@ -44,6 +44,8 @@ export default News;
 
 export const getNews = () => News.find();
 export const getNewsById = (id: string) => News.findById(id);
+export const getAllUserNews = (userId: string) =>
+  News.find({ createdBy: userId });
 export const createNewsInDb = async (news: newsDto) => {
   try {
     const generatedNews = new News(news);

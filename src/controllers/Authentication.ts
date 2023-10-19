@@ -7,16 +7,24 @@ import {
 } from "../models/User";
 import {
   checkPassword,
+  comparePasswords,
   createHash,
-  generateToken,
+  generateJwtToken,
   random,
   validatePassword,
 } from "../utils/password";
 
 export const register = async (req: Request, res: Response) => {
   try {
-    const { email, password, fullName } = req.body as registerDto;
-    if (!email || !password || !fullName || validatePassword(password)) {
+    const { email, password, fullName, confirmPassword } =
+      req.body as registerDto;
+    if (
+      !email ||
+      !password ||
+      !fullName ||
+      !validatePassword(password) ||
+      !comparePasswords(password, confirmPassword)
+    ) {
       return res.sendStatus(400);
     }
 
@@ -67,7 +75,7 @@ export const login = async (req: Request, res: Response) => {
       return res.sendStatus(400);
     }
 
-    const accessToken = generateToken(user._id);
+    const accessToken = generateJwtToken(user._id);
     return res.json({ accessToken });
   } catch (error) {
     console.log(error);
